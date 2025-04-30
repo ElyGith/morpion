@@ -10,6 +10,16 @@ type SquareProps = {
   square_onclick: ()=>void
     
   };
+
+type BoardProps = 
+{
+    all_square: SquareValue[];
+    val_status: string;
+    OX: boolean;
+    board_col: number;
+    board_row: number;
+    click_fun: Function;
+};
 /* const Square = ({ value }: SquareProps) => {
 
 syntaxe avec un paramètre
@@ -66,60 +76,13 @@ const calculateWinner= (all_sqr : SquareValue[]): string => {
 
 
 
-const Board = ()=>{ 
+const Board = (props:BoardProps)=>{ 
+  const { all_square, val_status, OX, board_col, board_row, click_fun } = props;
 
 
-  const board_row=3;
-  const board_col=3;
-  const [winner,setWinner]=useState<string>('');
-  const [val_status,setVal_status]=useState<string>('Tour du X');
-  const [OX,setOX]= useState(true);
+ // const[historique_array,setHistorique] = useState<Array<Array<SquareValue>>>(Array(board_col*board_row).fill(null));
 
-  const [all_square,set_all_square]= useState<Array<SquareValue>>(Array(board_col*board_row).fill(null));
-
-  function click_fun(i:number)
-  {
-    if (all_square[i])
-    {
-      return;
-    }
-    if (winner != '')
-    {
-      return;
-    }
-    const new_tab=all_square.slice();
-    if(OX===true)
-    {
-      console.log(`test du XXXXX ${i}`)
-
-      new_tab[i] = 'X';
-      setOX(false);
-      setVal_status("Tour du O");
-
-
-    }
-    if (OX===false) 
-    {
-      console.log(`test du OOOO ${i}`)
-
-      new_tab[i]='O';
-      setOX(true);
-      setVal_status("Tour du X");
-
-    }
-    setWinner(calculateWinner(new_tab)); // soit on le fait sur la copie du tableau ici
-                // soit on le fait après le changement du tableau sur l'original
-    let winner_local: SquareValue = calculateWinner(new_tab)
-
-    if (winner_local){
-      setVal_status(victoire_affichage(winner_local));
-      console.log(`le gagnant est ${winner}`)
-
-    }
-  set_all_square(new_tab);
-
-  }
-
+//  const [all_square,set_all_square]= useState<Array<SquareValue>>(Array(board_col*board_row).fill(null));
 
 
 return(<>
@@ -150,9 +113,6 @@ export {Board};
 
 const Historique = ()=>{
 
-
-
-
   return (
     <>
     
@@ -162,18 +122,85 @@ const Historique = ()=>{
 }
 
 const Game = () => {
+/* 
+  const [val_status, setVal_status] = useState<string>('Tour du X');
+  const [OX, setOX] = useState<boolean>(true);
 
 
+  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([Array(board_row).fill(null)]);
 
+  On mets tout les éléments qu'on veut modifier avec Board et Historique (entre deux enfants)
+
+*/
+  const [val_status_val, setVal_status] = useState<string>('Tour du X'); //X est tjrs premier a jouer
+  const [OX_val, setOX] = useState<boolean>(true); // true = X, false = O
+  const board_col_val = 3;
+  const board_row_val = 3;
+  const[historique_array,setHistorique] = useState<Array<Array<SquareValue>>>(Array(board_col_val*board_row_val).fill(null));
+
+  const [winner, setWinner] = useState<string>('');
+
+  const [all_square,set_all_square]= useState<Array<SquareValue>>(Array(board_col_val*board_row_val).fill(null));
+
+  const propsBoard: BoardProps = {
+    board_col: board_col_val,
+    board_row: board_row_val,
+    all_square: all_square,
+    val_status: val_status_val,
+    OX: OX_val,
+    click_fun: click_fun,
+  };
+
+
+  function click_fun(i: number) {
+    if (all_square[i]) {
+      return;
+    }
+    if (winner != '') {
+      return;
+    }
+    const new_tab = all_square.slice();
+    if (OX_val === true) {
+      console.log(`test du XXXXX ${i}`)
+
+      new_tab[i] = 'X';
+      setOX(false);
+      setVal_status("Tour du O");
+
+
+    }
+    if (OX_val === false) {
+      console.log(`test du OOOO ${i}`)
+
+      new_tab[i] = 'O';
+      setOX(true);
+      setVal_status("Tour du X");
+
+    }
+    setHistorique([...historique_array, new_tab]);
+  
+
+    setWinner(calculateWinner(new_tab)); // soit on le fait sur la copie du tableau ici
+    // soit on le fait après le changement du tableau sur l'original
+    let winner_local: SquareValue = calculateWinner(new_tab)
+    //on stock le gagnant pour pouvoir garder la bonne valeur et l'utilisé derrière (ne pas utiliser le hook ici)
+
+    if (winner_local) {
+      setVal_status(victoire_affichage(winner_local));
+      console.log(`le gagnant est ${winner}`)
+
+    }
+    set_all_square(new_tab);
+
+  }
 
   return (
     <>
-      <div className='historique'> <Historique /> </div>
-      <div className='board'> <Board /> </div>
+      <div className='historique'> <Historique /> </div> 
+      <div className='board'> <Board {...propsBoard}/></div>
 
-
-
-    </>
+      </>
   )
 
 }
