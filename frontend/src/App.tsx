@@ -111,16 +111,6 @@ return(<>
 export {Board};
 
 
-const Historique = ()=>{
-
-  return (
-    <>
-    
-    </>
-  )
-
-}
-
 const Game = () => {
 /* 
   const [val_status, setVal_status] = useState<string>('Tour du X');
@@ -137,7 +127,8 @@ const Game = () => {
   const [OX_val, setOX] = useState<boolean>(true); // true = X, false = O
   const board_col_val = 3;
   const board_row_val = 3;
-  const[historique_array,setHistorique] = useState<Array<Array<SquareValue>>>(Array(board_col_val*board_row_val).fill(null));
+  const [nb_tour,setNb_tour] = useState<number>(0);
+  const[historique_array,setHistorique] = useState<Array<Array<SquareValue>>>([Array(board_col_val*board_row_val).fill(null)]);
 
   const [winner, setWinner] = useState<string>('');
 
@@ -152,9 +143,40 @@ const Game = () => {
     click_fun: click_fun,
   };
 
+function maj_historique(nb_tour: number, new_tab: Array<SquareValue>)
+{
+  setHistorique([...historique_array, new_tab]); // attention à l'ordre
+  const button=document.createElement('button');
+  const div= document.querySelector(".historique");
+  button.textContent = `Tour ${nb_tour}`;
+  const array = historique_array[nb_tour];
+  button.onclick = () => {
+    
+    set_all_square(array);
+    maj_winner(array);
+  };
+  div?.appendChild(button);
+  console.log(`test maj histo `);
+  console.log(historique_array);
 
-  function click_fun(i: number) {
-    if (all_square[i]) {
+
+}
+function maj_winner(new_tab: Array<SquareValue>)
+{
+  setWinner(calculateWinner(new_tab)); // soit on le fait sur la copie du tableau ici
+  // soit on le fait après le changement du tableau sur l'original
+  let winner_local: SquareValue = calculateWinner(new_tab)
+  //on stock le gagnant pour pouvoir garder la bonne valeur et l'utilisé derrière (ne pas utiliser le hook ici)
+
+  if (winner_local) {
+    setVal_status(victoire_affichage(winner_local));
+    console.log(`le gagnant est ${winner}`)
+
+  }
+}
+
+  function click_fun(case_i: number) {
+    if (all_square[case_i]) {
       return;
     }
     if (winner != '') {
@@ -162,42 +184,35 @@ const Game = () => {
     }
     const new_tab = all_square.slice();
     if (OX_val === true) {
-      console.log(`test du XXXXX ${i}`)
+      console.log(`test du XXXXX ${case_i}`)
 
-      new_tab[i] = 'X';
+      new_tab[case_i] = 'X';
       setOX(false);
       setVal_status("Tour du O");
 
 
     }
     if (OX_val === false) {
-      console.log(`test du OOOO ${i}`)
+      console.log(`test du OOOO ${case_i}`)
 
-      new_tab[i] = 'O';
+      new_tab[case_i] = 'O';
       setOX(true);
       setVal_status("Tour du X");
 
     }
-    setHistorique([...historique_array, new_tab]);
+    setNb_tour(nb_tour + 1);
+    maj_historique(nb_tour, new_tab);
+   // console.log(historique_array);
   
-
-    setWinner(calculateWinner(new_tab)); // soit on le fait sur la copie du tableau ici
-    // soit on le fait après le changement du tableau sur l'original
-    let winner_local: SquareValue = calculateWinner(new_tab)
-    //on stock le gagnant pour pouvoir garder la bonne valeur et l'utilisé derrière (ne pas utiliser le hook ici)
-
-    if (winner_local) {
-      setVal_status(victoire_affichage(winner_local));
-      console.log(`le gagnant est ${winner}`)
-
-    }
+maj_winner(new_tab);
+   
     set_all_square(new_tab);
 
   }
 
   return (
     <>
-      <div className='historique'> <Historique /> </div> 
+      <div className='historique'> </div> 
       <div className='board'> <Board {...propsBoard}/></div>
 
       </>
@@ -206,8 +221,6 @@ const Game = () => {
 }
 
 export {Game};
-
-export {Historique};
 
 function App() {
   console.log('Square component 2');
