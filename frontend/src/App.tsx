@@ -1,6 +1,4 @@
-import { use, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState } from 'react'
 import './App.css'
 
 console.log('Square component 1');
@@ -64,9 +62,7 @@ const calculateWinner= (all_sqr : SquareValue[]): string => {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (all_sqr[a] && all_sqr[a] === all_sqr[b] && all_sqr[a] === all_sqr[c]) {
-      console.log("bravisimooo");
       
-
       res=all_sqr[a];
 
     }
@@ -77,7 +73,7 @@ const calculateWinner= (all_sqr : SquareValue[]): string => {
 
 
 const Board = (props:BoardProps)=>{ 
-  const { all_square, val_status, OX, board_col, board_row, click_fun } = props;
+  const { all_square, val_status, board_col, board_row, click_fun } = props;
 
 
  // const[historique_array,setHistorique] = useState<Array<Array<SquareValue>>>(Array(board_col*board_row).fill(null));
@@ -112,6 +108,7 @@ export {Board};
 
 
 const Game = () => {
+
 /* 
   const [val_status, setVal_status] = useState<string>('Tour du X');
   const [OX, setOX] = useState<boolean>(true);
@@ -123,6 +120,7 @@ const Game = () => {
   On mets tout les éléments qu'on veut modifier avec Board et Historique (entre deux enfants)
 
 */
+
   const [val_status_val, setVal_status] = useState<string>('Tour du X'); //X est tjrs premier a jouer
   const [OX_val, setOX] = useState<boolean>(true); // true = X, false = O
   const board_col_val = 3;
@@ -223,36 +221,13 @@ maj_winner(new_tab);
 export {Game};
 
 function App() {
-  console.log('Square component 2');
-
-  const [count, setCount] = useState(0)
 
   return (
     <>
    
       <div className='game'> <Game /> </div>
 
-      <div>
-
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+     
     </>
   )
 }
